@@ -1,0 +1,110 @@
+[project]
+name = "petrelpy"
+version = "0.1.0"
+description = "Utilities for working with Petrel imports and exports."
+authors = [
+    { name = "Frank Male", email = "frank.male@psu.edu" },
+]
+license =  {file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.8,<3.12"
+dependencies = [
+  "dask",
+  "fastparquet",
+  "numpy",
+  "pandas",
+  "scipy",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit >=2.19",
+    "jupyter >=1.0.0",
+]
+docs = [
+    "myst-nb >=0.13.1",
+    "sphinx >=5.0.2",
+    "sphinx-autoapi >=1.8.4",
+    "sphinx-rtd-theme >=1.0.0",
+]
+test = [
+    "pytest >=6.2",
+    "pytest-cov >=2.12.1",
+    "pytest-mpl >=0.16",
+    "pytest-xdist >=2.4",
+]
+
+[build-system]
+requires = ["hatchling>=0.7"]
+build-backend = "hatchling.build"
+
+[tool.check-manifest]
+ignore = [".ruff_cache/**"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+  "@jit",
+  "@njit",
+  "raise NotImplementedError",
+]
+[tool.coverage.run]
+source = ["src/petrelpy"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "--cov=petrelpy",
+    "--cov-append",
+    "--cov-report=xml",
+    "--cov-config=pyproject.toml",
+    "--mpl",
+    "--mpl-baseline-path=tests/baseline",
+]
+testpaths = [
+    "tests",
+]
+
+[tool.ruff]
+select = [
+  "E", "F", "W", # flake8
+  "B", "B904",    # flake8-bugbear
+  "I",           # isort
+  "ARG",         # flake8-unused-arguments
+  "C4",          # flake8-comprehensions
+  "EM",          # flake8-errmsg
+  "ICN",         # flake8-import-conventions
+  "ISC",         # flake8-implicit-str-concat
+  "PGH",         # pygrep-hooks
+  "PIE",         # flake8-pie
+  "PL",          # pylint
+  "PT",          # flake8-pytest-style
+  "PTH",         # flake8-use-pathlib
+  "RET",         # flake8-return
+  "RUF",         # Ruff-specific
+  "SIM",         # flake8-simplify
+  "T20",         # flake8-print
+  "UP",          # pyupgrade
+  "YTT",         # flake8-2020
+]
+extend-ignore = [
+  "PLR",    # Design related pylint codes
+  "PT004",  # Use underscore for non-returning fixture (use usefixture instead)
+  "RET504",  # 'unnecessary' variable assignment before return statement
+]
+line-length = 99
+target-version = "py37"
+unfixable = [
+  "T20",  # Removes print statements
+  "F841", # Removes unused variables
+]
+exclude = []
+flake8-unused-arguments.ignore-variadic-names = true
+isort.required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"noxfile.py" = ["T", "T201"]
+"tests/**.py" = ["D101", "D102", "D103"]
