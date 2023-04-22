@@ -64,8 +64,6 @@ addopts = [
     "--cov-append",
     "--cov-report=xml",
     "--cov-config=pyproject.toml",
-    "--mpl",
-    "--mpl-baseline-path=tests/baseline",
 ]
 testpaths = [
     "tests",
