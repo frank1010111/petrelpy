@@ -36,7 +36,7 @@ test = [
 ]
 
 [project.scripts]
-petrelpy = "petrelpy.petrelpy:petrel"
+petrelpy = "petrelpy.cli:cli"
 
 [build-system]
 requires = ["hatchling>=0.7"]
