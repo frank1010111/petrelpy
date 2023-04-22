@@ -107,24 +107,25 @@ def read_production(infile, yearly=False):
     else:
         raw_df["Date"] = pd.to_datetime(raw_df.Month + raw_df.Year, format="%b%Y")
 
-    # print(len(Raw),'reports found')
-
     wells = (
-        raw_df.groupby(["API", "Date"])
-        .agg({col: sum for col in cols})
-        .reset_index()
-        # .groupby('API')
+        raw_df.groupby(["API", "Date"]).agg({col: sum for col in cols}).reset_index()
     )
     return wells
 
 
 def export_vol(wells, outfile, header=None):
+    if any(wells.columns.to_series().str.startswith("Annual")):
+        yearly = True
+        wells = wells.rename(columns=lambda col: col.replace("Annual ", ""))
+    else:
+        yearly = False
     if not header:
-        header = """
-*Field
-*MONTHLY
-*DAY *MONTH *YEAR *OIL *WATER *GAS
-"""
+        header = (
+            "\n"
+            "*Field\n"
+            f"*{'YEARLY' if yearly else 'MONTHLY'}\n"
+            "*DAY *MONTH *YEAR *OIL *WATER *GAS\n"
+        )
 
     # export data
     with Path(outfile).open("w") as f:
