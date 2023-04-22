@@ -69,7 +69,7 @@ Nox also has a few other useful sessions:
 ⚡ nox -l
 Nox sessions for linting, docs, and testing.
 
-Sessions defined in /home/frank/petrelpy/noxfile.py:
+Sessions defined in /home//petrelpy/noxfile.py:
 
 * lint -> Run the linter.
 * tests -> Run the unit and regular tests.
