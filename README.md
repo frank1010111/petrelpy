@@ -63,4 +63,18 @@ pytest.
 nox -s tests
 ```
 
-Nox also has
+Nox also has a few other useful sessions:
+
+```
+⚡ nox -l
+Nox sessions for linting, docs, and testing.
+
+Sessions defined in /home/frank/petrelpy/noxfile.py:
+
+* lint -> Run the linter.
+* tests -> Run the unit and regular tests.
+- docs -> Build the docs. Pass "serve" to serve.
+- build -> Build an SDist and a wheel.
+
+sessions marked with * are selected, sessions marked with - are skipped.
+```
