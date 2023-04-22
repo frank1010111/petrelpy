@@ -1,5 +1,8 @@
-import pandas as pd
+from __future__ import annotations
+
 from pathlib import Path
+
+import pandas as pd
 
 
 def write_header(df, fname, fill_na=-999):
@@ -25,61 +28,12 @@ BEGIN HEADER
     body = df.fillna(fill_na).to_csv(
         header=False, index=False, quoting=2, sep=" ", line_terminator="\n"
     )
-    with open(fname, "w") as f:
+    with Path(fname).open("w") as f:
         f.write(header_head + body)
 
 
 def read_header(fname):
-    return read_tops(fname)
-
-
-def read_tops(fname: str):
-    """Read Petrel tops files into a dataframe."""
-    with open(fname, "r") as f:
-        i = 0
-        cols_started = False
-        colnames = []
-        for line in f:
-            line = line.rstrip("\r\n")
-            if line == "END HEADER":
-                break
-            else:
-                i += 1
-                if cols_started:
-                    colnames.append(line)
-                if line == "BEGIN HEADER":
-                    cols_started = True
-    try:
-        df = pd.read_csv(
-            fname,
-            skiprows=i + 1,
-            names=colnames,
-            header=None,
-            sep="\s+",
-            na_values=-999,
-            dtype={"Well": str},
-        )
-    except UnicodeDecodeError:
-        df = pd.read_csv(
-            fname,
-            skiprows=i + 1,
-            names=colnames,
-            header=None,
-            sep="\s+",
-            na_values=-999,
-            dtype={"Well": str},
-            encoding="ISO-8859-1",
-        )
-    return df
-
-
-def write_tops(df, fname, comments="", fill_na=-999):
-    header = "BEGIN HEADER\n" + "\n".join(df.columns) + "\nEND HEADER\n"
-    body = df.fillna(fill_na).to_csv(
-        header=False, index=False, quoting=2, sep=" ", line_terminator="\n"
-    )
-    with open(fname, "w") as f:
-        f.write(comments + "\nVERSION 2\n" + header + body)
+    return read_petrel_tops(fname)
 
 
 def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
@@ -88,7 +42,8 @@ def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     df_perf : pd.DataFrame
-        Well completion data. Expected columns include "Date Completion","Date First Report", "Depth Top", "Depth Base" and "UWI"
+        Well completion data. Expected columns include "Date Completion",
+        "Date First Report", "Depth Top", "Depth Base" and "UWI"
 
     Returns
     -------
@@ -112,8 +67,7 @@ def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
 def export_perfs(out_df: pd.DataFrame, out_fname: str, header=None):
     if not header:
         header = """UNITS FIELD\n"""
-    # print(header)
-    with open(out_fname, "w") as f:
+    with Path(out_fname).open("w") as f:
         f.write(header)
         for api, well in out_df:
             f.write(f"\nWELLNAME {api}\n")
@@ -157,7 +111,7 @@ def read_production(infile, yearly=False):
 
     wells = (
         raw_df.groupby(["API", "Date"])
-        .agg({"Gas": sum, "Liquid": sum, "Water": sum})
+        .agg({col: sum for col in cols})
         .reset_index()
         # .groupby('API')
     )
@@ -169,18 +123,18 @@ def export_vol(wells, outfile, header=None):
         header = """
 *Field
 *MONTHLY
-*DAY *MONTH *YEAR *OIL *WATER *GAS 
+*DAY *MONTH *YEAR *OIL *WATER *GAS
 """
 
     # export data
-    with open(outfile, "w") as f:
+    with Path(outfile).open("w") as f:
         f.write(header)
         for UWI, production in wells.groupby("API"):
-            f.write("\n*NAME {}\n".format(UWI))
+            f.write(f"\n*NAME {UWI}\n")
             for _, vals in production.sort_values("Date").fillna(0).iterrows():
                 f.write(
-                    f"1 {vals.Date.month:<2d} {vals.Date.year}   "
-                    + f"{vals.Liquid:<6.0f} {vals.Water:<6.0f} {vals.Gas:<6.0f}\n"
+                    f"01 {vals.Date.month:02} {vals.Date.year}   "
+                    f"{vals.Liquid:<6.2f} {vals.Water:<6.2f} {vals.Gas:<6.2f}\n"
                 )
     return
 
@@ -190,16 +144,16 @@ def export_injection_vol(wells, outfile, header=None):
         header = """
 *Field
 *MONTHLY
-*DAY *MONTH *YEAR *WATER *GAS 
+*DAY *MONTH *YEAR *WATER *GAS
 """
-    with open(outfile, "w") as f:
+    with Path(outfile).open("w") as f:
         f.write(header)
         for UWI, production in wells.groupby("API"):
-            f.write("\n*NAME {}\n".format(UWI))
+            f.write(f"\n*NAME {UWI}\n")
             for _, vals in production.sort_values("Date").fillna(0).iterrows():
                 f.write(
                     f"1 {vals.Date.month:<2d} {vals.Date.year}   "
-                    + f"{vals.Water:<6.0f} {vals.Gas:<6.0f}\n"
+                    f"{vals.Water:<6.0f} {vals.Gas:<6.0f}\n"
                 )
     return
 
@@ -246,11 +200,8 @@ def convert_properties_petrel_to_arc(fin, fout, prop):
             }
         )
     else:
-        raise (
-            ValueError(
-                "the number of k-layers is not 10 or 12, it's {}".format(layernum)
-            )
-        )
+        errmsg = f"the number of k-layers is not 10 or 12, it's {layernum}"
+        raise (ValueError(errmsg))
 
     dfo = df.set_index(["x_coord", "y_coord", "layer"])[[prop]].unstack("layer")
     dfo.columns = ["_".join(c) for c in dfo.columns.values]
@@ -270,7 +221,7 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
     pd.DataFrame
         Tops, with Well indicating the well, then a column for each surface
     """
-    with open(fname, "r") as f:
+    with Path(fname).open() as f:
         i = 0
         cols_started = False
         colnames = []
@@ -278,19 +229,18 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
             line = line.rstrip("\r\n")
             if line == "END HEADER":
                 break
-            else:
-                i += 1
-                if cols_started:
-                    colnames.append(line)
-                if line == "BEGIN HEADER":
-                    cols_started = True
+            i += 1
+            if cols_started:
+                colnames.append(line)
+            if line == "BEGIN HEADER":
+                cols_started = True
     try:
         df = pd.read_csv(
             fname,
             skiprows=i + 1,
             names=colnames,
             header=None,
-            sep="\s+",
+            sep="\\s+",
             na_values=-999,
             dtype={"Well": str},
         )
@@ -300,7 +250,7 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
             skiprows=i + 1,
             names=colnames,
             header=None,
-            sep="\s+",
+            sep="\\s+",
             na_values=-999,
             dtype={"Well": str},
             encoding="ISO-8859-1",
@@ -326,5 +276,5 @@ def write_tops(df, fname, comments="", fill_na=-999):
     body = df.fillna(fill_na).to_csv(
         header=False, index=False, quoting=2, sep=" ", line_terminator="\n"
     )
-    with open(fname, "w") as f:
+    with Path(fname).open("w") as f:
         f.write(comments + "\nVERSION 2\n" + header + body)
