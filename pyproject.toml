@@ -72,22 +72,29 @@ testpaths = [
 [tool.ruff]
 select = [
   "E", "F", "W", # flake8
-  "B", "B904",    # flake8-bugbear
+  "B", "B904",   # flake8-bugbear
+  "D",           # pydocstyle
   "I",           # isort
+  "N",           # pep8-naming
+  "S",           # flake8-bandit
   "ARG",         # flake8-unused-arguments
   "C4",          # flake8-comprehensions
   "EM",          # flake8-errmsg
   "ICN",         # flake8-import-conventions
   "ISC",         # flake8-implicit-str-concat
+  "PD",          # pandas-vet
   "PGH",         # pygrep-hooks
   "PIE",         # flake8-pie
   "PL",          # pylint
+  "PLE",         # Error
+  "PLW",         # Warning
   "PT",          # flake8-pytest-style
   "PTH",         # flake8-use-pathlib
   "RET",         # flake8-return
   "RUF",         # Ruff-specific
   "SIM",         # flake8-simplify
   "T20",         # flake8-print
+  "TID",         # flake8-tidy-imports
   "UP",          # pyupgrade
   "YTT",         # flake8-2020
 ]
@@ -95,6 +102,10 @@ extend-ignore = [
   "PLR",    # Design related pylint codes
   "PT004",  # Use underscore for non-returning fixture (use usefixture instead)
   "RET504",  # 'unnecessary' variable assignment before return statement
+  "D203",  # no-blank-line-before-class
+  "D407",  # Missing dashed underline after section
+  "D409","D213","D406",
+  "S101", # Using assert
 ]
 line-length = 99
 target-version = "py37"
