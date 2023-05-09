@@ -55,9 +55,9 @@ pipx install pre-commit
 pre-commit install
 ```
 
-Add a new CLI sub-command at `src/petrelpy/cli.py`! Then add tests for your new
-code. These can be run with [nox](https://nox.thea.codes/en/stable/), which uses
-pytest.
+And add a new CLI sub-command at `src/petrelpy/cli.py`! Then add tests for your
+new code. These can be run with [nox](https://nox.thea.codes/en/stable/), which
+uses pytest.
 
 ```sh
 nox -s tests
