@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pandas as pd
 import pytest
 from click.testing import CliRunner
 from petrelpy.cli import cli
@@ -48,5 +49,34 @@ def test_cli_wellconnection():
         result = runner.invoke(cli, args)
         assert result.exit_code == 0
         bench = wcf_file.with_suffix(".csv")
-        with Path(out_file).open() as f_output, Path(bench).open() as f_benchmark:
+        with out_file.open() as f_output, Path(bench).open() as f_benchmark:
+            assert f_output.read() == f_benchmark.read()
+
+
+@pytest.mark.parametrize("output_format", ["ev", "prn"])
+@pytest.mark.parametrize("input_format", ["csv", "xlsx", "prn"])
+def test_cli_perforations(input_format, output_format):
+    runner = CliRunner()
+    with runner.isolated_filesystem() as td:
+        main_perf_file = Path(__file__).parent / "data/test_perf.csv"
+        if input_format == "csv":
+            perf_file = main_perf_file
+        elif input_format == "xlsx":
+            perf_file = Path(td) / "test_perf.xlsx"
+            pd.read_csv(main_perf_file).to_excel(perf_file, index=False)
+        elif input_format == "prn":
+            perf_file = Path(td) / "test_perf.prn"
+            pd.read_csv(main_perf_file).to_csv(perf_file, sep=" ", index=False)
+        else:
+            msg = "Something has gone wrong with your file extensions, should be csv,xlsx, or prn"
+            raise ValueError(msg)
+        output_file = Path(td) / f"petrel_perfs.{output_format}"
+        args = ["perforation", f"{perf_file}", "-o", f"{output_file}"]
+        result = runner.invoke(cli, args)
+        assert result.exit_code == 0
+        if output_format == "ev":
+            bench = main_perf_file.with_suffix(".ev")
+        else:
+            bench = main_perf_file.parent / "benchmark_perf.prn"
+        with output_file.open() as f_output, bench.open() as f_benchmark:
             assert f_output.read() == f_benchmark.read()
