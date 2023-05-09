@@ -19,8 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit >=2.19",
-    "jupyter >=1.0.0",
+    "ipykernel >=6.0.0",
 ]
 docs = [
     "myst-nb >=0.13.1",
