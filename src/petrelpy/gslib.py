@@ -1,10 +1,10 @@
-# Copyright 2011-2018 Frank Male
-# This file is part of Fetkovich-Male fit which is released under a proprietary license
-# See README.txt for details
+"""Work with gslib geomodel format."""
+from __future__ import annotations
+
 import dask.dataframe as dd
-import pandas as pd
-import numpy as np
 import fastparquet
+import numpy as np
+import pandas as pd
 from scipy.spatial import cKDTree
 
 long_layerdict = {
@@ -33,7 +33,7 @@ def load_from_petrel(fin, npartitions=60):
         sep=" ",
         header=numprops + 1,
         na_values=-999,
-        names=list(head[0]) + ["null"],
+        names=[*list(head[0]), "null"],
     )
     df = df.repartition(npartitions=npartitions).drop("null", 1)
     return df
@@ -41,7 +41,7 @@ def load_from_petrel(fin, npartitions=60):
 
 def get_midpoint_cell_columns(df, dir_out):
     """Find cell columns where UWI-index exists
-    df is the ini
+    df is the ini.
     """
     # ID midpoints
     df_midpoints = df.dropna(subset=["UWI-index"]).compute()
@@ -64,7 +64,9 @@ def get_midpoint_cell_columns(df, dir_out):
             dfp.dropna(thresh=3)
             .set_index(["i_index", "j_index", "k_index"])
             .sort_index()
-            .loc[idx[df_midpoints["i_index"], df_midpoints["j_index"], :],]
+            .loc[
+                idx[df_midpoints["i_index"], df_midpoints["j_index"], :],
+            ]
         )
         print(n, "row groups down")
         n += 1
@@ -74,7 +76,7 @@ def get_midpoint_cell_columns(df, dir_out):
 
 def limit_column_height(df_midpoints, df_ij, zdmax=1000):
     """Cut down on size of model by limiting cell midpoint vertical space to within zdmax of distance
-    between wells (in df_midpoints) and geomodel cells (in df_ij)
+    between wells (in df_midpoints) and geomodel cells (in df_ij).
     """
     df_out = []
 
@@ -89,7 +91,7 @@ def limit_column_height(df_midpoints, df_ij, zdmax=1000):
 
 
 def get_header(fin):
-    with open(fin, "r") as f:
+    with open(fin) as f:
         h = []
         i = False
         for line in f:
@@ -107,20 +109,20 @@ def get_header(fin):
 
 
 def load_petrel_tops_file(fin):
-    "Load in petrel tops file and return pandas dataframe"
+    "Load in petrel tops file and return pandas dataframe."
     colnames = get_header(fin)
-    with open(fin, "r") as f:
+    with open(fin) as f:
         for i, line in enumerate(f):
             line = line.strip()
             if line == "END HEADER":
                 break
-    df = pd.read_csv(fin, skiprows=i + 1, names=colnames, sep="\s+", na_values=-999)
+    df = pd.read_csv(fin, skiprows=i + 1, names=colnames, sep="\\s+", na_values=-999)
     return df
 
 
 def match_well_to_cell(df_wells, df_cells, distance_upper_bound=2000):
     """Give each well in df_wells with an XYZ position the i,j,k index of the nearest cell in df_cells
-    distance_upper_bound: limit of the max distance between the well and its cell
+    distance_upper_bound: limit of the max distance between the well and its cell.
     """
     # make tree in 3D for getting nearest neighbors
     tree_cells = cKDTree(df_cells[["x_coord", "y_coord", "z_coord"]])
@@ -138,7 +140,7 @@ def match_well_to_cell(df_wells, df_cells, distance_upper_bound=2000):
         well_cell.loc[:, i] = np.nan
 
     # assign i,j,k for each well to nearest cell
-    for l, w in well_cell.iterrows():
+    for l, _w in well_cell.iterrows():
         if np.isfinite(dist[l]):
             well_cell.loc[l, ["i_index", "j_index", "k_index"]] = df_cells.iloc[
                 locs[l]
@@ -156,7 +158,7 @@ def match_ijz_petrel(df_full, UWI_toindex, wdir, zdmax=1000):
        zdmax (float): maximum z variation from cells in ij column to point including a UWI-index
     outputs:
        merged (pd.DataFrame): merged dataframe that has all your favorite attributes in an ij column with
-                              less than zdmax vertical separation from midpoint at UWI-index
+                              less than zdmax vertical separation from midpoint at UWI-index.
 
     """
     df_midpoints = df_full.dropna(subset=["UWI-index"]).compute()
@@ -193,8 +195,7 @@ def agg_ijz(
 
 
 def get_facies_stats(df, zonename="Mainzones", faciesname="Facies", attrs=None):
-    """Get aggregated statistics for different facies and zones"""
-
+    """Get aggregated statistics for different facies and zones."""
     df_out = df.groupby([zonename, faciesname])[list(attrs.keys())]
     df_out = df_out.agg(attrs).compute()
     return df_out
@@ -225,7 +226,7 @@ def get_facies_histograms(
             df_slice = df[(df[zone_name] == z) & (df[facies_name] == face)]
             for p in properties:
                 df_slice[p + "_"] = (
-                    ((df_slice[p] // (prop_max[p] / 100.0))).dropna().astype(int)
+                    (df_slice[p] // (prop_max[p] / 100.0)).dropna().astype(int)
                 )
                 split = df_slice.groupby(p + "_")[ooip_name].sum().compute()
                 ooip_splits.loc[:, (z, face, p)] = split

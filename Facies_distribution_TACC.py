@@ -1,10 +1,6 @@
-# Copyright 2011-2018 Frank Male
-# This file is part of Fetkovich-Male fit which is released under a proprietary license
-# See README.txt for details
-import dask.dataframe as dd
-import pandas as pd
-import numpy as np
-import fastparquet
+"""Extract GSLIB data."""
+from __future__ import annotations
+
 import petrelpy
 
 fin = "OOIP facies dep.txt"

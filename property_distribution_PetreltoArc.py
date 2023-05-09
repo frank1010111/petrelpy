@@ -1,6 +1,5 @@
-# Copyright 2011-2018 Frank Male
-# This file is part of Fetkovich-Male fit which is released under a proprietary license
-# See README.txt for details
+"""Estimate average geomodel properties for Arc."""
+from __future__ import annotations
 
 import pandas as pd
 from petrelpy.petrel import convert_properties_petrel_to_arc
