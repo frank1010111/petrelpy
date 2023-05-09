@@ -8,7 +8,13 @@ from zipfile import ZipFile
 import click
 import pandas as pd
 
-from petrelpy.petrel import export_vol, read_production
+from petrelpy.petrel import (
+    export_perfs_ev,
+    export_perfs_prn,
+    export_vol,
+    get_raw_table,
+    read_production,
+)
 from petrelpy.wellconnection import (
     COL_NAMES_TRAJECTORY,
     get_trajectory_columns,
@@ -93,3 +99,62 @@ def connection(input: click.Path, output: click.Path, heel: click.Path):
     if output is None:
         output = Path(input).with_suffix(".csv")
     aggregates.to_csv(output)
+
+
+@cli.command()
+@click.argument("input", type=click.Path(exists=True), nargs=-1)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(writable=True),
+    help="petrel event file with perforations, defaults to first input file with .ev extension",
+)
+@click.option(
+    "-h",
+    "--header",
+    default="UNITS FIELD\n",
+    help="header information to include in the event file",
+)
+@click.option(
+    "-d",
+    "--date-col",
+    default="Treatment Start Date",
+    help="column for perforation dates",
+)
+@click.option("--sheetname", default=0, help="sheet name for excel file inputs")
+def perforation(
+    input: tuple[click.Path],
+    output: click.Path,
+    header: str,
+    date_col: str,
+    sheetname: str | int,
+):
+    """Create petrel perforation file.
+
+    Takes csv, excel, or prn files as input.
+    Expected columns include: API, Treatment Start Date, start_depth, stop_depth
+
+    Produces .ev (default) or .prn file
+    """
+    perforations = pd.concat(
+        [get_raw_table(fname, sheetname) for fname in input]
+    ).rename_axis(index="API")
+    click.echo(f"{len(perforations)} reports found")
+    if date_col not in perforations.columns:
+        msg = f"{date_col} is not among the columns loaded from the files provided"
+        raise click.BadParameter(msg, param=date_col)
+    perforations["Date"] = pd.to_datetime(perforations[date_col]).dt.strftime(
+        "%m.%d.%Y"
+    )
+    output = Path(input[0]).with_suffix(".ev") if output is None else Path(output)
+    if output.suffix == ".ev":
+        export_perfs_ev(perforations, output, header)
+    elif output.suffix == ".prn":
+        export_perfs_prn(perforations, output)
+    else:
+        msg = (
+            f"The output file {output} does not have a supported extension.\n"
+            "Supported extensions are .ev and .prn"
+        )
+        option_name = "output"
+        raise click.BadOptionUsage(option_name, msg)

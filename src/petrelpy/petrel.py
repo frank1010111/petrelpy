@@ -1,3 +1,4 @@
+"""Convert between Petrel and various other formats."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -32,12 +33,13 @@ BEGIN HEADER
         f.write(header_head + body)
 
 
-def read_header(fname):
+def read_header(fname: str) -> pd.DataFrame:
+    """Read headers from a file."""
     return read_petrel_tops(fname)
 
 
 def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
-    """Group perforations by well
+    """Group perforations by well.
 
     Parameters
     ----------
@@ -64,21 +66,77 @@ def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
     return out_df
 
 
-def export_perfs(out_df: pd.DataFrame, out_fname: str, header=None):
-    if not header:
-        header = """UNITS FIELD\n"""
-    with Path(out_fname).open("w") as f:
+# def export_perfs(out_df: pd.DataFrame, out_fname: str, header=None):
+#     if not header:
+#         header = """UNITS FIELD\n"""
+#     with Path(out_fname).open("w") as f:
+#         f.write(header)
+#         for api, well in out_df:
+#             f.write(f"\nWELLNAME {api}\n")
+#             for _, vals in well.iterrows():
+#                 f.write(
+#                     f"{vals['Date']} perforation {vals['Depth Top']} {vals['Depth Base']} 1 0\n"
+#                 )
+
+
+def export_perfs_ev(
+    perfs: pd.DataFrame, output: Path, header: str = "UNITS FIELD\n"
+) -> None:
+    """Export perforations in ev (event file) format.
+
+    Args:
+        perfs (pd.DataFrame): contains perfs in columns for API,start_depth,stop_depth
+        output (Path): prn file to write to
+        header (str): first line for file, probably explaining units
+    """
+    wells = perfs.groupby(level=0)  # group by well
+    with Path(output).open("w") as f:
         f.write(header)
-        for api, well in out_df:
+        for api, well in wells:
             f.write(f"\nWELLNAME {api}\n")
             for _, vals in well.iterrows():
                 f.write(
-                    f"{vals['Date']} perforation {vals['Depth Top']} {vals['Depth Base']} 1 0\n"
+                    "{} perforation {} {} 1 0\n".format(
+                        *vals[["Date", "start_depth", "stop_depth"]]
+                    )
                 )
 
 
-def read_production(infile, yearly=False):
-    "Get raw data from infile (even if infile is several files)"
+def export_perfs_prn(perfs: pd.DataFrame, output: Path) -> None:
+    """Export perforations in prn (fixed) format.
+
+    Args:
+        perfs (pd.DataFrame): contains perfs in columns for API,start_depth,stop_depth
+        output (Path): prn file to write to
+    """
+    prn_frame = (
+        perfs.reset_index()
+        .rename(columns={"API": "UWI", "start_depth": "Top", "stop_depth": "Bottom"})[
+            ["UWI", "Top", "Bottom"]
+        ]
+        .assign(Perf=1)
+        .sort_values("UWI")
+    )
+    with output.open("w") as f:
+        f.write("UWI             Top    Bottom  Perf\n")
+        for uwi, w in prn_frame.groupby("UWI"):
+            old_bottom_location = 0
+            for _, x in w.iterrows():
+                top_location, bottom_location = x[["Top", "Bottom"]]
+                if top_location <= old_bottom_location:
+                    top_location = old_bottom_location + 1
+                    if bottom_location < top_location:
+                        bottom_location = top_location
+                old_bottom_location = bottom_location
+                f.write(
+                    "{:<14}  {:<6.0f} {:<6.0f}  1\n".format(
+                        uwi, top_location, bottom_location
+                    )
+                )
+
+
+def read_production(infile: str | tuple[str], yearly=False):
+    """Get raw data from infile (even if infile is several files)."""
     # read in data and group by well
     if yearly:
         sheetname = "Annual Production"
@@ -89,12 +147,12 @@ def read_production(infile, yearly=False):
 
     def readfile(fname):
         if Path(fname).suffix == ".csv":
-            Raw = pd.read_csv(fname, converters={"Year": str, "API": str})
+            raw_df = pd.read_csv(fname, converters={"Year": str, "API": str})
         else:
-            Raw = pd.read_excel(
+            raw_df = pd.read_excel(
                 fname, sheet_name=sheetname, converters={"Year": str, "API": str}
             )
-        return Raw
+        return raw_df
 
     if isinstance(infile, (list, tuple)):
         sheets = [readfile(fname) for fname in infile]
@@ -113,7 +171,8 @@ def read_production(infile, yearly=False):
     return wells
 
 
-def export_vol(wells, outfile, header=None):
+def export_vol(wells: pd.DataFrame, outfile: str | Path, header: str | None = None):
+    """Export production volumes to Petrel-readable .vol format file."""
     if any(wells.columns.to_series().str.startswith("Annual")):
         yearly = True
         wells = wells.rename(columns=lambda col: col.replace("Annual ", ""))
@@ -130,8 +189,8 @@ def export_vol(wells, outfile, header=None):
     # export data
     with Path(outfile).open("w") as f:
         f.write(header)
-        for UWI, production in wells.groupby("API"):
-            f.write(f"\n*NAME {UWI}\n")
+        for uwi, production in wells.groupby("API"):
+            f.write(f"\n*NAME {uwi}\n")
             for _, vals in production.sort_values("Date").fillna(0).iterrows():
                 f.write(
                     f"01 {vals.Date.month:02} {vals.Date.year}   "
@@ -141,6 +200,7 @@ def export_vol(wells, outfile, header=None):
 
 
 def export_injection_vol(wells, outfile, header=None):
+    """Export injection volumes to Petrel-readable .vol format file."""
     if not header:
         header = """
 *Field
@@ -149,8 +209,8 @@ def export_injection_vol(wells, outfile, header=None):
 """
     with Path(outfile).open("w") as f:
         f.write(header)
-        for UWI, production in wells.groupby("API"):
-            f.write(f"\n*NAME {UWI}\n")
+        for uwi, production in wells.groupby("API"):
+            f.write(f"\n*NAME {uwi}\n")
             for _, vals in production.sort_values("Date").fillna(0).iterrows():
                 f.write(
                     f"1 {vals.Date.month:<2d} {vals.Date.year}   "
@@ -160,16 +220,17 @@ def export_injection_vol(wells, outfile, header=None):
 
 
 def convert_properties_petrel_to_arc(fin, fout, prop):
-    df = pd.read_csv(
+    """Make Midland basin Petrel gslib file Arc-readable."""
+    geomodel = pd.read_csv(
         fin,
         sep=" ",
         header=8,
         index_col=False,
         names=["i", "j", "k", "x_coord", "y_coord", "z_coord", prop],
     )
-    layernum = df.k.unique()
+    layernum = geomodel.k.unique()
     if len(layernum) == 10:
-        df["layer"] = df.k.replace(
+        geomodel["layer"] = geomodel.k.replace(
             {
                 1: "USB",
                 2: "MSB",
@@ -184,7 +245,7 @@ def convert_properties_petrel_to_arc(fin, fout, prop):
             }
         )
     elif len(layernum) == 12:
-        df["layer"] = df.k.replace(
+        geomodel["layer"] = geomodel.k.replace(
             {
                 1: "above",
                 2: "USB",
@@ -204,9 +265,11 @@ def convert_properties_petrel_to_arc(fin, fout, prop):
         errmsg = f"the number of k-layers is not 10 or 12, it's {layernum}"
         raise (ValueError(errmsg))
 
-    dfo = df.set_index(["x_coord", "y_coord", "layer"])[[prop]].unstack("layer")
-    dfo.columns = ["_".join(c) for c in dfo.columns.values]
-    dfo.to_csv(fout)
+    arc_layers = geomodel.set_index(["x_coord", "y_coord", "layer"])[
+        [prop]
+    ].pivot_table(columns="layer")
+    arc_layers.columns = ["_".join(c) for c in arc_layers.columns.to_numpy()]
+    arc_layers.to_csv(fout)
 
 
 def read_petrel_tops(fname: str) -> pd.DataFrame:
@@ -236,7 +299,7 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
             if line == "BEGIN HEADER":
                 cols_started = True
     try:
-        df = pd.read_csv(
+        well_tops = pd.read_csv(
             fname,
             skiprows=i + 1,
             names=colnames,
@@ -246,7 +309,7 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
             dtype={"Well": str},
         )
     except UnicodeDecodeError:
-        df = pd.read_csv(
+        well_tops = pd.read_csv(
             fname,
             skiprows=i + 1,
             names=colnames,
@@ -256,7 +319,7 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
             dtype={"Well": str},
             encoding="ISO-8859-1",
         )
-    return df
+    return well_tops
 
 
 def write_tops(df, fname, comments="", fill_na=-999):
@@ -279,3 +342,23 @@ def write_tops(df, fname, comments="", fill_na=-999):
     )
     with Path(fname).open("w") as f:
         f.write(comments + "\nVERSION 2\n" + header + body)
+
+
+def get_raw_table(fname: str | Path, sheetname: int | str = 0) -> pd.DataFrame:
+    """Ingest excel, prn, or csv file.
+
+    Args:
+        fname (str): file to read
+        sheetname (int | str, optional): sheet to extract if excel. Defaults to 0.
+
+    Returns:
+        pd.DataFrame: table
+    """
+    fname = Path(fname)
+    if ".xls" in fname.suffix:
+        raw_frame = pd.read_excel(fname, sheetname, index_col=0)
+    elif fname.suffix == ".prn":
+        raw_frame = pd.read_csv(fname, sep="\\s+", index_col=0)
+    else:
+        raw_frame = pd.read_csv(fname, index_col=0)
+    return raw_frame
