@@ -1,3 +1,4 @@
+"""Command line tool for working with Petrel input and output formats."""
 from __future__ import annotations
 
 import sys
@@ -5,8 +6,14 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import click
+import pandas as pd
 
 from petrelpy.petrel import export_vol, read_production
+from petrelpy.wellconnection import (
+    COL_NAMES_TRAJECTORY,
+    get_trajectory_columns,
+    process_well_connection_file,
+)
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
@@ -57,3 +64,32 @@ def production(input: click.Path, output: click.Path, yearly: bool, zip: bool):
     else:
         wells = read_production(input, yearly)
     export_vol(wells, output)
+
+
+@cli.command()
+@click.argument("input", type=click.Path(exists=True))
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(writable=True),
+    help="well property aggregate file, defaults to input file location with .csv extension",
+)
+@click.option("-e", "--heel", type=click.Path(exists=True))
+def connection(input: click.Path, output: click.Path, heel: click.Path):
+    """Process well connection file to average geomodel properties.
+
+    This gets well properties from Petrel (in an Eclipse format) into a spreadsheet.
+    """
+    columns = get_trajectory_columns(input)
+    # click.echo(f"The columns are {columns}")
+    geomodel_cols = columns.split("  ")[1:]
+    all_cols = COL_NAMES_TRAJECTORY + geomodel_cols
+    heel_frame = pd.read_csv(heel)
+    aggregates = (
+        process_well_connection_file(input, heel_frame, col_names=all_cols)
+        .dropna(subset=["GRID_I"])
+        .rename_axis(index="UWI")
+    )
+    if output is None:
+        output = Path(input).with_suffix(".csv")
+    aggregates.to_csv(output)

@@ -8,6 +8,7 @@ import io
 from pathlib import Path
 from typing import Any, Iterator
 
+import numpy as np
 import pandas as pd
 
 COL_NAMES_TRAJECTORY = [
@@ -25,13 +26,19 @@ COL_NAMES_TRAJECTORY = [
     "WELL_EXIT_Z",
     "EXIT_FACE",
 ]
+TRAJECTORY_AGG = {
+    "MD_ENTRY": "min",
+    "GRID_I": "std",
+    "GRID_J": "std",
+    "GRID_K": "std",
+}
 
 
 def process_well_connection_file(
     well_connection_file: str,
     wellname_to_heel: pd.DataFrame,
-    property_aggregates: dict[str, Any],
-    col_names: list,
+    property_aggregates: dict[str, Any] | None = None,
+    col_names: list[str] | None = None,
 ) -> pd.DataFrame:
     """Get average properties along the laterals for a well connection file.
 
@@ -65,7 +72,7 @@ def process_well_connection_file(
     return property_frame
 
 
-def get_wellnames(wc_file):
+def get_wellnames(wc_file: str | Path):
     """Get all the well names from a well connection file."""
     with Path(wc_file).open() as f:
         wellnames = [
@@ -82,7 +89,6 @@ def get_trajectory_columns(fname: str | Path):
         trajectory = False
         columns = ""
         for row in f:
-            # print(row)
             if trajectory:
                 columns = row.strip()
                 break
@@ -94,17 +100,17 @@ def get_trajectory_columns(fname: str | Path):
 def process_well_lateral(
     well_string: str,
     wellname_to_heel: pd.DataFrame,
-    property_aggregates: dict,
-    col_names: list,
+    property_aggregates: dict[str, Any] | None = None,
+    col_names: list[str] | None = None,
 ) -> pd.Series:
     """Get average properties along the well lateral from the geomodel.
 
     Args:
         well_string (str): portion of well connection file containing one well
-        wellname_to_heel (pd.DataFrame): DataFrame containing UWI,Name,Depth_Heel for each well
+        wellname_to_heel (pd.DataFrame): DataFrame containing UWI,Name,Depth_heel for each well
             in the connection file
         property_aggregates (dict): mapping from properties to aggregation methods
-        col_names (list): columns for the well trajectory
+        col_names (list[str]): columns for the well trajectory
 
     Returns:
         pd.Series: average properties along the well's lateral
@@ -119,14 +125,36 @@ def process_well_lateral(
         lateral = trajectory.iloc[[-1]]
     else:
         lateral = trajectory[uwi_heel["Depth_heel"] <= trajectory.MD_ENTRY]
+
+    def mode(series):
+        return series.mode().iloc[0]
+
+    if property_aggregates is None:
+        numeric_cols = trajectory.select_dtypes(include=["number"]).columns.difference(
+            COL_NAMES_TRAJECTORY
+        )
+        property_aggregates = {
+            col: "mean" if all(trajectory[col] != np.round(trajectory[col])) else mode
+            for col in numeric_cols
+        }
+        property_aggregates.update(TRAJECTORY_AGG)
+        for col in lateral.columns.difference(numeric_cols).difference(
+            COL_NAMES_TRAJECTORY
+        ):
+            property_aggregates[col] = mode
     properties = lateral.agg(property_aggregates)
     if properties.shape[0] == 0:
         properties = properties.reindex([0])
-    properties = properties.iloc[0].rename(uwi_heel["UWI"])
+    try:
+        properties = properties.iloc[0].rename(uwi_heel["UWI"])
+    except AttributeError:
+        properties = properties.rename(uwi_heel["UWI"])
     return properties
 
 
-def get_trajectory(well_string: str, col_names: list[str]) -> pd.DataFrame:
+def get_trajectory(
+    well_string: str, col_names: list[str] | None = None
+) -> pd.DataFrame:
     """Get trajectory for a well from the well connection file.
 
     Args:
@@ -142,6 +170,11 @@ def get_trajectory(well_string: str, col_names: list[str]) -> pd.DataFrame:
     out_frame = pd.read_csv(
         io.StringIO(trajectory), sep="\\s+", names=col_names, na_values=["-999"]
     )
+    if col_names is None:
+        n_extra_cols = len(out_frame.columns) - len(COL_NAMES_TRAJECTORY)
+        out_frame.columns = COL_NAMES_TRAJECTORY + [
+            f"col_{i+1}" for i in range(n_extra_cols)
+        ]
     return out_frame
 
 
