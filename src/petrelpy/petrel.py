@@ -9,14 +9,10 @@ import pandas as pd
 def write_header(df, fname, fill_na=-999):
     """Write header information to a Petrel-readable header file.
 
-    Parameters
-    ----------
-    df : DataFrame
-        header information for wells (does not pass index)
-    fname : str
-        file to write to
-    fill_na : int, optional
-        value to write null values to, by default -999
+    Args:
+        df (DataFrame): header information for wells (does not pass index)
+        fname (str): file to write to
+        fill_na (int, optional): value to write null values to, by default -999
     """
     header_head = (
         """# Petrel well head
@@ -41,16 +37,13 @@ def read_header(fname: str) -> pd.DataFrame:
 def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
     """Group perforations by well.
 
-    Parameters
-    ----------
-    df_perf : pd.DataFrame
-        Well completion data. Expected columns include "Date Completion",
-        "Date First Report", "Depth Top", "Depth Base" and "UWI"
+    Args:
+        df_perf (pd.DataFrame):
+            Well completion data. Expected columns include "Date Completion",
+            "Date First Report", "Depth Top", "Depth Base" and "UWI"
 
-    Returns
-    -------
-    pd.DataFrame
-        Perforations grouped by well
+    Returns:
+        pd.DataFrame: Perforations grouped by well
     """
     # gather dates
     df_perf["Date"] = df_perf["Date Completion"]
@@ -172,7 +165,14 @@ def read_production(infile: str | tuple[str], yearly=False):
 
 
 def export_vol(wells: pd.DataFrame, outfile: str | Path, header: str | None = None):
-    """Export production volumes to Petrel-readable .vol format file."""
+    """Export production volumes to Petrel-readable .vol format file.
+
+    Args:
+        wells (pd.DataFrame): IHS-style wells dataframe with oil, water, and gas production.
+            Expected columns are API,Date,Liquid,Water,Gas.
+        outfile (str | Path): vol file to save to
+        header (str | None, optional): Units and column names. Defaults to None.
+    """
     if any(wells.columns.to_series().str.startswith("Annual")):
         yearly = True
         wells = wells.rename(columns=lambda col: col.replace("Annual ", ""))
@@ -200,7 +200,14 @@ def export_vol(wells: pd.DataFrame, outfile: str | Path, header: str | None = No
 
 
 def export_injection_vol(wells, outfile, header=None):
-    """Export injection volumes to Petrel-readable .vol format file."""
+    """Export injection volumes to Petrel-readable .vol format file.
+
+    Args:
+        wells (pd.DataFrame): IHS-style wells dataframe with water, and gas injection.
+            Expected columns are API,Date,Water,Gas.
+        outfile (str | Path): vol file to save to
+        header (str | None, optional): Units and column names. Defaults to None.
+    """
     if not header:
         header = """
 *Field
@@ -275,15 +282,11 @@ def convert_properties_petrel_to_arc(fin, fout, prop):
 def read_petrel_tops(fname: str) -> pd.DataFrame:
     """Read Petrel tops file.
 
-    Parameters
-    ----------
-    fname : str
-        path to file
+    Args:
+        fname (str): path to file
 
-    Returns
-    -------
-    pd.DataFrame
-        Tops, with Well indicating the well, then a column for each surface
+    Returns:
+        pd.DataFrame: Tops, with Well indicating the well, then a column for each surface
     """
     with Path(fname).open() as f:
         i = 0
@@ -325,16 +328,12 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
 def write_tops(df, fname, comments="", fill_na=-999):
     """Write top picks to Petrel-readable file.
 
-    Parameters
-    ----------
-    df : DataFrame
-        tops picks. Expects "Well" to be first column, then a column per horizon
-    fname : str
-        Path to write out
-    comments : str, optional
-        Any comments to include at the beginning of the file, by default ""
-    fill_na : int, optional
-        Value to assign nulls to, by default -999
+    Args:
+        df (DataFrame): tops picks. Expects "Well" to be first column, then a column per horizon
+        fname (str): Path to write out
+        comments (str, optional):  Any comments to include at the beginning of the file,
+            by default ""
+        fill_na (int, optional): Value to assign nulls to, by default -999
     """
     header = "BEGIN HEADER\n" + "\n".join(df.columns) + "\nEND HEADER\n"
     body = df.fillna(fill_na).to_csv(

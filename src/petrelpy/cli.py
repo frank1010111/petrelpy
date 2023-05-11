@@ -80,7 +80,12 @@ def production(input: click.Path, output: click.Path, yearly: bool, zip: bool):
     type=click.Path(writable=True),
     help="well property aggregate file, defaults to input file location with .csv extension",
 )
-@click.option("-e", "--heel", type=click.Path(exists=True))
+@click.option(
+    "-e",
+    "--heel",
+    type=click.Path(exists=True),
+    help="csv file with well to heel measured depth. The columns needed are UWI,Name,Depth_Heel",
+)
 def connection(input: click.Path, output: click.Path, heel: click.Path):
     """Process well connection file to average geomodel properties.
 
