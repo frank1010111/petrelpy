@@ -38,7 +38,10 @@ Commands:
 
 Then, there are a few sub-commands.
 
-### Connection
+::::::::{grid} 1
+
+:::::::{grid-item} ::::::{dropdown} Exporting properties along the wellbore with
+well `connection` files
 
 This sub-command allows you to process Eclipse well connection files (`.wcf`) to
 get average properties along the lateral for wells.
@@ -64,15 +67,17 @@ The process is this:
 1. Export a well connection file from Petrel
 2. Make a heel spreadsheet with the columns UWI, Name, and Depth_Heel.
 
-- UWI is the 14-digit API number,
-- Name is the name Petrel has saved as the well name (it is used in the well
-  connection file to denote each well)
-- Depth_Heel is the measured depth at which the lateral begins
+   - UWI is the 14-digit API number,
+   - Name is the name Petrel has saved as the well name (it is used in the well
+     connection file to denote each well)
+   - Depth_Heel is the measured depth at which the lateral begins
 
 3. Run the command like so...
    `petrelpy connection field.wcf -e heels.csv -o well_properties.csv`
 
-### Perforation
+:::::: :::::::
+
+:::::::{grid-item} ::::::{dropdown} Importing `perforation` files into Petrel
 
 This creates perforation files from spreadsheets to import into Petrel.
 
@@ -102,14 +107,16 @@ The process is this:
 2. Adjust it such that the columns are "API", "Treatment Start Date",
    "start_depth", and "stop_depth"
 
-- API is the 14-digit unique well identifier
-- Treatment Start Date is the date the perforations were created
-- start_depth is the measured depth where the perforation starts
-- stop_depth is the measured depth where the perforation ends
+   - API is the 14-digit unique well identifier
+   - Treatment Start Date is the date the perforations were created
+   - start_depth is the measured depth where the perforation starts
+   - stop_depth is the measured depth where the perforation ends
 
 3. Run the CLI tool like so... `petrelpy perforation perfs.csv -o perfs.ev`
 
-### Production
+:::::: :::::::
+
+:::::::{grid-item} ::::::{dropdown} Importing `production` files into Petrel
 
 This creates a vol file for production data that can be imported into Petrel.
 
@@ -135,12 +142,16 @@ The process is this:
    Month, Liquid, Water, Gas. If the yearly option is used, Month is not
    necessary and (Liquid, Water, Gas) add Annual like Annual Liquid.
 
-- API: The unique well identifier
-- Year: The production year
-- Month: The production month (sorry days)
-- Liquid: Oil production in bbl
-- Water: water production in bbl
-- Gas: gas production in Mcf
+   - API: The unique well identifier
+   - Year: The production year
+   - Month: The production month (sorry days)
+   - Liquid: Oil production in bbl
+   - Water: water production in bbl
+   - Gas: gas production in Mcf
 
 2. Run the CLI tool like...
    `petrelpy production production.csv -o production.vol`
+
+:::::: :::::::
+
+::::::::
