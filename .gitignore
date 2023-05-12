@@ -145,3 +145,4 @@ dmypy.json
 # SPE files
 data/production_data.csv
 data/well_data.csv
+docs/reference/generated
