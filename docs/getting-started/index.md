@@ -32,6 +32,7 @@ Options:
 
 Commands:
   connection   Process well connection file to average geomodel properties.
+  gslib        Process GSLIB geocellular model file to spreadsheet.
   perforation  Create petrel perforation file.
   production   Convert IHS production spreadsheet to Petrel vol format.
 ```
@@ -73,6 +74,38 @@ The process is this:
 
 3. Run the command like so...
    `petrelpy connection field.wcf -e heels.csv -o well_properties.csv`
+
+::::::
+
+:::::::
+
+:::::::{grid-item} ::::::{dropdown} Exporting `gslib` files from Petrel
+
+This creates spreadsheets from the petrel geocellular model properties.
+
+```bash
+$ petrelpy gslib --help
+Usage: petrelpy gslib [OPTIONS] GSLIB_FILE
+
+  Process GSLIB geocellular model file to spreadsheet.
+
+  Defaults to writing a parquet format to ease further manipulation with
+  python, but csv is also supported.
+
+Options:
+  -o, --output PATH              geocellular model in spreadsheet format.
+  --output_format [parquet|csv]  Format to write gslib file to. Defaults to
+                                 parquet.
+  -h, --help                     Show this message and exit.
+```
+
+
+The process is this:
+
+1. Export a gslib file from Petrel
+2. Run the command like so...
+   `petrelpy gslib reservoir.gslib --output_format=csv`
+3. You've now got `reservoir.csv` to work with
 
 ::::::
 
