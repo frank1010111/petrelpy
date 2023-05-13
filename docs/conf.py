@@ -26,7 +26,6 @@ author = "Frank Male"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    # "myst_parser",
     "myst_nb",
     "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
@@ -41,7 +40,7 @@ extensions = [
 templates_path = []
 
 # Include both markdown and rst files
-source_suffix = [".rst", ".md"]
+source_suffix = [".rst", ".md", ".ipynb"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

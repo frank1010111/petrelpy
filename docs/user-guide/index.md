@@ -8,5 +8,5 @@ New users should start with {doc}`11-minutes-to-petrelpy`.
 
 ```{toctree}
 :maxdepth: 1
-11-minutes-to-petrelpy.md
+11-minutes-to-petrelpy.ipynb
 ```
