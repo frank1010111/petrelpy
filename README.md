@@ -97,4 +97,4 @@ New Petrel-helpers are always appreciated. See
     Yet he ne’er falters, - so, petrel, spring
     Once more o’er the waves on thy stormy wing!
 
-    [Barry Cornwall](https://mypoeticside.com/show-classic-poem-6226)
+[Barry Cornwall](https://mypoeticside.com/show-classic-poem-6226)
