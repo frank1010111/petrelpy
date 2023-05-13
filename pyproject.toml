@@ -24,7 +24,9 @@ dev = [
 ]
 docs = [
     "furo",
+    "jupytext >=1.14",
     "myst-nb >=0.13.1",
+    "myst-parser",
     "sphinx >=5.0.2",
     "sphinx-autoapi >=1.8.4",
     "sphinx-copybutton",
