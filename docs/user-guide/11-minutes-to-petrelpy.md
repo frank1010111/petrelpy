@@ -18,6 +18,15 @@ This is a short, tutorial-style introduction to `petrelpy`, using Petrel-esque
 import and export files and some simple dataframe manipulation to show the uses
 of the library for extracting data from Petrel export formats.
 
+## Installing as a library
+
+From your favorite terminal (and probably
+[virtual environment](https://docs.python.org/3/library/venv.html)), run
+
+```bash
+pip install git+https://github.com/frank1010111/petrelpy.git
+```
+
 ## Loading well connection data
 
 A few useful Petrel exports are gslib (Full 3D property grids) and well
