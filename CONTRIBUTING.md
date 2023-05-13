@@ -23,6 +23,10 @@ wanted" is open to whoever wants to implement it.
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
+Or add a new CLI sub-command at `src/petrelpy/cli.py`! Then add tests for your
+new code. These can be run with [nox](https://nox.thea.codes/en/stable/), which
+uses pytest.
+
 ### Write Documentation
 
 You can never have enough documentation! Please feel free to contribute to any
@@ -78,6 +82,22 @@ nox
 ```
 
 5. Commit your changes and open a pull request.
+
+Nox also has a few other useful sessions:
+
+```
+⚡ nox -l
+Nox sessions for linting, docs, and testing.
+
+Sessions defined in /home//petrelpy/noxfile.py:
+
+* lint -> Run the linter.
+* tests -> Run the unit and regular tests.
+- docs -> Build the docs. Pass "serve" to serve.
+- build -> Build an SDist and a wheel.
+
+sessions marked with * are selected, sessions marked with - are skipped.
+```
 
 ## Pull Request Guidelines
 
