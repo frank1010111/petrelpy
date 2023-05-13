@@ -21,14 +21,13 @@
     generated/ptp.petrel.read_petrel_tops
 
     generated/ptp.gslib.load_from_petrel
-    generated/ptp.gslib.get_header
-    generated/ptp.gslib.load_petrel_tops_file
-    generated/ptp.gslib.get_facies_stats
-    generated/ptp.gslib.get_facies_histograms
-    generated/ptp.gslib.get_midpoint_cell_columns
-    generated/ptp.gslib.match_ijz_petrel
-    generated/ptp.gslib.match_well_to_cell
-    generated/ptp.gslib.limit_column_height
+    generated/ptp.gslib.aggregate_well_properties.rst
+    generated/ptp.gslib.get_facies_histograms.rst
+    generated/ptp.gslib.get_facies_stats.rst
+    generated/ptp.gslib.get_midpoint_cell_columns.rst
+    generated/ptp.gslib.load_petrel_tops_file.rst
+    generated/ptp.gslib.match_ijz_petrel.rst
+    generated/ptp.gslib.match_well_to_cell.rst
 
     generated/ptp.wellconnection.process_well_connection_file
     generated/ptp.wellconnection.process_well_lateral
