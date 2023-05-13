@@ -1,9 +1,9 @@
 """Configuration file for the Sphinx documentation builder.
+
 This file only contains a selection of the most common options. For a full
 list see the documentation:
 https://www.sphinx-doc.org/en/master/usage/configuration.html.
 """
-
 from __future__ import annotations
 
 import datetime
@@ -26,7 +26,8 @@ author = "Frank Male"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "myst_parser",
+    # "myst_parser",
+    "myst_nb",
     "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
@@ -67,8 +68,9 @@ html_css_files = [
 myst_enable_extensions = [
     "colon_fence",
     "deflist",
+    "amsmath",
+    "dollarmath",
 ]
-
 
 # Generate Python docstrings
 HERE = Path(__file__).parent

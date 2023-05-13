@@ -1,10 +1,12 @@
 # User Guide
 
 This user guide provides examples using petrelpy as a library rather than a CLI
-tool.
+tool. The `petrelpy` library uses pandas internally, which means you get all the
+goodies that come with it.
 
-New users should start with {doc}`10-minutes-to-petrelpy`.
+New users should start with {doc}`11-minutes-to-petrelpy`.
 
-```{tableofcontents}
-
+```{toctree}
+:maxdepth: 1
+11-minutes-to-petrelpy.md
 ```

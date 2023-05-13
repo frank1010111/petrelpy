@@ -40,8 +40,7 @@ Then, there are a few sub-commands.
 
 ::::::::{grid} 1
 
-:::::::{grid-item} ::::::{dropdown} Exporting properties along the wellbore with
-well `connection` files
+:::::::{grid-item} ::::::{dropdown} Exporting properties along the wellbore with well `connection` files
 
 This sub-command allows you to process Eclipse well connection files (`.wcf`) to
 get average properties along the lateral for wells.
@@ -75,7 +74,9 @@ The process is this:
 3. Run the command like so...
    `petrelpy connection field.wcf -e heels.csv -o well_properties.csv`
 
-:::::: :::::::
+::::::
+
+:::::::
 
 :::::::{grid-item} ::::::{dropdown} Importing `perforation` files into Petrel
 
@@ -114,7 +115,9 @@ The process is this:
 
 3. Run the CLI tool like so... `petrelpy perforation perfs.csv -o perfs.ev`
 
-:::::: :::::::
+::::::
+
+:::::::
 
 :::::::{grid-item} ::::::{dropdown} Importing `production` files into Petrel
 
@@ -152,6 +155,8 @@ The process is this:
 2. Run the CLI tool like...
    `petrelpy production production.csv -o production.vol`
 
-:::::: :::::::
+::::::
+
+:::::::
 
 ::::::::
