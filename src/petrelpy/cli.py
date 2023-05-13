@@ -8,6 +8,7 @@ from zipfile import ZipFile
 import click
 import pandas as pd
 
+from petrelpy.gslib import load_from_petrel
 from petrelpy.petrel import (
     export_perfs_ev,
     export_perfs_prn,
@@ -163,3 +164,40 @@ def perforation(
         )
         option_name = "output"
         raise click.BadOptionUsage(option_name, msg)
+
+
+@cli.command()
+@click.argument("gslib_file", type=click.Path(exists=True))
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(writable=True),
+    help="geocellular model in spreadsheet format.",
+)
+@click.option(
+    "--output_format",
+    type=click.Choice(["parquet", "csv"]),
+    default="parquet",
+    help="Format to write gslib file to. Defaults to parquet.",
+)
+def gslib(gslib_file: str, output: str | None, output_format: str):
+    """Process GSLIB geocellular model file to spreadsheet.
+
+    Defaults to writing a parquet format to ease further manipulation with
+    python, but csv is also supported.
+    """
+    geomodel = load_from_petrel(gslib_file)
+
+    if output is None:
+        output = Path(gslib_file).with_suffix(f".{output_format}")
+    else:
+        output = Path(output).with_suffix(f".{output_format}")
+
+    if output_format == "parquet":
+        geomodel.to_parquet(output, write_index=False)
+    elif output_format == "csv":
+        geomodel.compute().to_csv(output, index=False)
+    else:
+        errmsg = f"Only writes to parquet or csv, not {output_format}"
+        option = "output_format"
+        raise click.BadOptionUsage(option, errmsg)
