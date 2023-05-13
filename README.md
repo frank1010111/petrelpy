@@ -44,8 +44,8 @@ Commands:
 
 ## Getting started
 
-Check out [the docs](https://petrelpy.readthedocs.io). Since this isn't live
-quite yet, you can choose to use `nox -s docs -- serve` to see them locally.
+Check out [the docs](https://petrelpy.readthedocs.io). If it isn't live quite
+yet, you can choose to use `nox -s docs -- serve` to see them locally.
 
 ## Contributing
 
