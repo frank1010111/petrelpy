@@ -7,6 +7,7 @@ From the project's root directory, install the CLI tool using
 
 ```bash
 git clone https://github.com/frank1010111/petrelpy.git
+cd petrelpy
 pipx install .
 ```
 
