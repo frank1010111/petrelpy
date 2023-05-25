@@ -7,6 +7,7 @@ from zipfile import ZipFile
 
 import click
 import pandas as pd
+from trogon import tui
 
 from petrelpy.gslib import load_from_petrel
 from petrelpy.petrel import (
@@ -25,6 +26,7 @@ from petrelpy.wellconnection import (
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
 
+@tui()
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     """Command line tool for working with Petrel input and output formats."""
