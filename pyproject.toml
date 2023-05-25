@@ -16,6 +16,7 @@ dependencies = [
   "openpyxl",
   "pandas",
   "scipy",
+  "trogon",
 ]
 
 [project.optional-dependencies]
