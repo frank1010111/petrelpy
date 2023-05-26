@@ -2,6 +2,8 @@
 
 Getting data in and out of Petrel
 
+[![DOI](https://zenodo.org/badge/289056556.svg)](https://zenodo.org/badge/latestdoi/289056556)
+
 Included are a command line tool and library for importing
 
 - production
