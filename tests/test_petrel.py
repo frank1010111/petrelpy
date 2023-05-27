@@ -7,6 +7,11 @@ import pandas as pd
 import pytest
 from click.testing import CliRunner
 from petrelpy.cli import cli
+from petrelpy.wellconnection import (
+    COL_NAMES_TRAJECTORY,
+    get_trajectory_geomodel_columns,
+    process_well_connection_file,
+)
 
 
 @pytest.mark.parametrize("yearly", [True, False])
@@ -114,3 +119,17 @@ def test_cli_gslib(output_format):
             assert set(benchmark.columns) == set(result_frame.columns)
             for col in benchmark.columns:
                 assert pytest.approx(benchmark[col]) == result_frame[col]
+
+
+def test_double_trajectory_columns():
+    input = "data/test_duplicated.wcf"
+    heel = "data/test_heels.csv"
+    geomodel_cols = get_trajectory_geomodel_columns(input)
+    all_cols = COL_NAMES_TRAJECTORY + geomodel_cols
+    heel_frame = pd.read_csv(heel)
+    aggregates = (
+        process_well_connection_file(input, heel_frame, col_names=all_cols)
+        .dropna(subset=["GRID_I"])
+        .rename_axis(index="UWI")
+    )
+    assert "General_1" in aggregates.columns
