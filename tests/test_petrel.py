@@ -122,8 +122,8 @@ def test_cli_gslib(output_format):
 
 
 def test_double_trajectory_columns():
-    input = "data/test_duplicated.wcf"
-    heel = "data/test_heels.csv"
+    input = Path(__file__).parent / "data/test_duplicated.wcf"
+    heel = Path(__file__).parent / "data/test_heels.csv"
     geomodel_cols = get_trajectory_geomodel_columns(input)
     all_cols = COL_NAMES_TRAJECTORY + geomodel_cols
     heel_frame = pd.read_csv(heel)
