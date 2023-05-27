@@ -19,7 +19,7 @@ from petrelpy.petrel import (
 )
 from petrelpy.wellconnection import (
     COL_NAMES_TRAJECTORY,
-    get_trajectory_columns,
+    get_trajectory_geomodel_columns,
     process_well_connection_file,
 )
 
@@ -94,9 +94,8 @@ def connection(input: click.Path, output: click.Path, heel: click.Path):
 
     This gets well properties from Petrel (in an Eclipse format) into a spreadsheet.
     """
-    columns = get_trajectory_columns(input)
-    # click.echo(f"The columns are {columns}")
-    geomodel_cols = columns.split("  ")[1:]
+    geomodel_cols = get_trajectory_geomodel_columns(input)
+    # click.echo(f"The columns are {geomodel_cols}")
     all_cols = COL_NAMES_TRAJECTORY + geomodel_cols
     heel_frame = pd.read_csv(heel)
     aggregates = (

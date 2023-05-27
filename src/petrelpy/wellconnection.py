@@ -49,7 +49,7 @@ def process_well_connection_file(
         property_aggregates (dict[str,Any]): properties from the well connection file to
             extract and how to aggregate them
         col_names (list): dictionary of column names in the well connection file
-            you can check this with get_tragectory_columns(well_connection_file)
+            you can check this with get_trajectory_geomodel_columns(well_connection_file)
             the first few are usually ['MD_ENTRY', 'GRID_I', 'GRID_J', 'GRID_K','WELL_ENTRY_X',
             'WELL_ENTRY_Y','WELL_ENTRY_Z','ENTRY_FACE','MD_EXIT','WELL_EXIT_X','WELL_EXIT_Y',
             'WELL_EXIT_Z','EXIT_FACE',]
@@ -72,7 +72,7 @@ def process_well_connection_file(
     return property_frame
 
 
-def get_wellnames(wc_file: str | Path):
+def get_wellnames(wc_file: str | Path) -> list[str]:
     """Get all the well names from a well connection file."""
     with Path(wc_file).open() as f:
         wellnames = [
@@ -83,7 +83,7 @@ def get_wellnames(wc_file: str | Path):
     return wellnames
 
 
-def get_trajectory_columns(fname: str | Path):
+def get_trajectory_geomodel_columns(fname: str | Path) -> list[str]:
     """Get columns used for well trajectory."""
     with Path(fname).open() as f:
         trajectory = False
@@ -94,7 +94,12 @@ def get_trajectory_columns(fname: str | Path):
                 break
             if row.strip() == "TRAJECTORY_COLUMN_ORDER":
                 trajectory = True
-    return columns
+    geomodel_cols = columns.split("  ")[1:]
+    geomodel_cols_deduped = [
+        a if not (s := sum(j == a for j in geomodel_cols[:i])) else f"{a}_{s}"
+        for i, a in enumerate(geomodel_cols)
+    ]
+    return geomodel_cols_deduped
 
 
 def process_well_lateral(
