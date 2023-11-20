@@ -189,7 +189,7 @@ def get_well(file_obj: Iterator[str]):
     Args:
         file_obj Iterator[str]: loaded well connection file, iterated over row-by-row
 
-    Yields
+    Yields:
         Iterator[str]: string containing well properties
     """
     in_well = False

@@ -159,7 +159,7 @@ def dodoc(docstring, qualname, names):
     out = re.sub(r"<<<([^>]*)>>>", r"`\1`_", out)
     out = re.sub(r"#(ak\.[A-Za-z0-9_\.]*[A-Za-z0-9_])", r":py:obj:`\1`", out)
     for x in names:
-        out = out.replace("#" + x, ":py:meth:`{1} <{0}.{1}>`".format(qualname, x))
+        out = out.replace("#" + x, f":py:meth:`{x} <{qualname}.{x}>`")
     out = re.sub(r"\[([^\]]*)\]\(([^\)]*)\)", r"`\1 <\2>`__", out)
     out = str(sphinx.ext.napoleon.GoogleDocstring(out, config))
     out = re.sub(
@@ -282,7 +282,6 @@ def dofunction(link, linelink, shortname, name, astfcn):
 
 
 for filename in glob.glob("../src/petrelpy/**/*.py", recursive=True):
-
     modulename = (
         filename.replace("../src/", "")
         .replace("/__init__.py", "")
@@ -303,7 +302,7 @@ for filename in glob.glob("../src/petrelpy/**/*.py", recursive=True):
     if modulename.startswith("petrelpy._") or modulename == "petrelpy.nplikes":
         continue
 
-    link = "`{} <https://github.com/frank1010111/petrelpy/blob/" "{}/{}>`__".format(
+    link = "`{} <https://github.com/frank1010111/petrelpy/blob/{}/{}>`__".format(
         modulename, latest_commit, filename.replace("../", "")
     )
 
