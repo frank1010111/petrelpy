@@ -121,11 +121,7 @@ def export_perfs_prn(perfs: pd.DataFrame, output: Path) -> None:
                     if bottom_location < top_location:
                         bottom_location = top_location
                 old_bottom_location = bottom_location
-                f.write(
-                    "{:<14}  {:<6.0f} {:<6.0f}  1\n".format(
-                        uwi, top_location, bottom_location
-                    )
-                )
+                f.write(f"{uwi:<14}  {top_location:<6.0f} {bottom_location:<6.0f}  1\n")
 
 
 def read_production(infile: str | tuple[str], yearly=False):

@@ -65,9 +65,7 @@ def get_midpoint_cell_columns(geomodel: dd.DataFrame, dir_out: str):
             dfp.dropna(thresh=3)
             .set_index(["i_index", "j_index", "k_index"])
             .sort_index()
-            .loc[
-                idx[df_midpoints["i_index"], df_midpoints["j_index"], :],
-            ]
+            .loc[idx[df_midpoints["i_index"], df_midpoints["j_index"], :],]
         )
         logging.info(n, "row groups down")
         n += 1

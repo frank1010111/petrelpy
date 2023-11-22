@@ -63,7 +63,7 @@ def production(input: click.Path, output: click.Path, yearly: bool, zip: bool):
     """
     if output is None:
         output = Path(input).with_suffix(".vol")
-        click.secho(f"output: {str(output)}", fg="green")
+        click.secho(f"output: {output!s}", fg="green")
 
     if zip:
         with ZipFile(input) as f:
