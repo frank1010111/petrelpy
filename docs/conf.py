@@ -7,8 +7,6 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html.
 from __future__ import annotations
 
 import datetime
-import runpy
-from pathlib import Path
 
 # Warning: do not change the path here. To use autodoc, you need to install the
 # package first.
@@ -28,6 +26,7 @@ author = "Frank Male"
 extensions = [
     "myst_nb",
     "sphinx.ext.autodoc",
+    "autoapi.extension",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx_copybutton",
@@ -71,6 +70,19 @@ myst_enable_extensions = [
     "dollarmath",
 ]
 
-# Generate Python docstrings
-HERE = Path(__file__).parent
-runpy.run_path(HERE / "prepare_docstrings.py", run_name="__main__")
+autoapi_dirs = ["../src/petrelpy"]
+autoapi_options = [
+    "members",
+    "show-inheritance",
+    "show-module-summary",
+]
+
+autoapi_add_toctree_entry = False
+# autoapi_generate_api_docs = False
+
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "pandas": ("https://pandas.pydata.org/docs/", None),
+    "dask": ("https://docs.dask.org/en/latest/", None),
+}

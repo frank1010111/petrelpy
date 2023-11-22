@@ -1,11 +1,11 @@
 # PetrelPy Documentation
 
 ```{toctree}
-:maxdepth: 1
+:maxdepth: 3
 :hidden:
 getting-started/index.md
 user-guide/index.md
-reference/index.md
+reference/index.rst
 contributing.md
 ```
 
