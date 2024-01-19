@@ -6,6 +6,7 @@ from petrelpy.petrel import convert_properties_petrel_to_arc
 
 
 def main():
+    """Run geomodel property averages."""
     # Pressure
     convert_properties_petrel_to_arc(
         "/home/malef/Downloads/All TORA Pressure XYZ Gslib Midland Basin.txt",
@@ -26,14 +27,14 @@ def main():
     )
 
     # z-values
-    df = pd.read_csv(
+    api_gravity = pd.read_csv(
         "/home/malef/Downloads/All TORA API gravity from Midpoints XYZ Gslib Midland Basin.txt",
         sep=" ",
         header=8,
         index_col=False,
         names=["i", "j", "k", "x_coord", "y_coord", "Z", "API"],
     )
-    df["layer"] = df.k.replace(
+    api_gravity["layer"] = api_gravity.k.replace(
         {
             1: "USB",
             2: "MSB",
@@ -47,9 +48,12 @@ def main():
             10: "WCD",
         }
     )
-    dfo = df.set_index(["x_coord", "y_coord", "layer"])[["Z"]].unstack("layer")
-    dfo.columns = ["_".join(c) for c in dfo.columns.values]
-    dfo.to_csv("/home/malef/West Texas data/Z.csv")
+    z_locations = api_gravity.pivot_table("Z", ["x_coord", "y_coord"], "layer")
+    # z_locations = api_gravity.set_index(["x_coord", "y_coord", "layer"])[["Z"]].unstack(
+    #     "layer"
+    # )
+    z_locations.columns = ["_".join(c) for c in z_locations.columns.to_numpy()]
+    z_locations.to_csv("/home/malef/West Texas data/Z.csv")
 
 
 if __name__ == "__main__":

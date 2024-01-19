@@ -289,13 +289,13 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
         cols_started = False
         colnames = []
         for line in f:
-            line = line.rstrip("\r\n")
-            if line == "END HEADER":
+            clean_line = line.rstrip("\r\n")
+            if clean_line == "END HEADER":
                 break
             i += 1
             if cols_started:
-                colnames.append(line)
-            if line == "BEGIN HEADER":
+                colnames.append(clean_line)
+            if clean_line == "BEGIN HEADER":
                 cols_started = True
     try:
         well_tops = pd.read_csv(

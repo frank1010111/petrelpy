@@ -28,10 +28,9 @@ def load_from_petrel(fin: Path | str, npartitions=60) -> dd.DataFrame:
         sep=" ",
         header=numprops + 1,
         na_values=-999,
-        names=[*list(head[0]), "null"],
+        names=list(head[0]),
     )
-    geomodel = geomodel.repartition(npartitions=npartitions).drop("null", 1)
-    return geomodel
+    geomodel = geomodel.repartition(npartitions=npartitions)
 
 
 def get_midpoint_cell_columns(geomodel: dd.DataFrame, dir_out: str):
@@ -110,12 +109,12 @@ def _get_header(fin: Path | str) -> list[str]:
         header_lines = []
         in_header = False
         for line in f:
-            line = line.strip()
-            if line == "BEGIN HEADER":
+            clean_line = line.strip()
+            if clean_line == "BEGIN HEADER":
                 in_header = True
             elif in_header:
-                header_lines.append(line)
-            elif line == "END HEADER":
+                header_lines.append(clean_line)
+            elif clean_line == "END HEADER":
                 break
     return header_lines
 
@@ -293,7 +292,7 @@ def get_facies_histograms(
                 )
                 split = df_slice.groupby(p + "_")[ooip_name].sum().compute()
                 ooip_splits.loc[:, (z, face, p)] = split
-                logging.info("finished zone", z, "facies", face, "property", p)
+                logging.info(f"finished zone {z}, facies {face}, property {p}")
 
     ooip_splits = ooip_splits.sort_index()
     # provide translation from index to x values for histogram

@@ -30,11 +30,12 @@ def test_cli_production(yearly):
         result = runner.invoke(cli, args)
         test_output = out_file.open().read()
     assert result.exit_code == 0
-    output_vol = Path("tests/data/test_monthly_prod.vol").open().read()
-    if yearly:
-        assert test_output == output_vol.replace("*MONTHLY", "*YEARLY")
-    else:
-        assert test_output == output_vol
+    with Path("tests/data/test_monthly_prod.vol").open() as f:
+        output_vol = f.read()
+        if yearly:
+            assert test_output == output_vol.replace("*MONTHLY", "*YEARLY")
+        else:
+            assert test_output == output_vol
 
 
 def test_cli_wellconnection():

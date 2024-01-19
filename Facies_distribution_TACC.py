@@ -4,8 +4,8 @@ from __future__ import annotations
 import petrelpy
 
 fin = "OOIP facies dep.txt"
-df = petrelpy.gslib.load_from_petrel(fin, npartitions=30)
-df = df.dropna(subset=["Mainzones"]).drop(
+ooip_cells = petrelpy.gslib.load_from_petrel(fin, npartitions=30)
+ooip_cells = ooip_cells.dropna(subset=["Mainzones"]).drop(
     ["i_index", "j_index", "k_index", "x_coord", "y_coord", "z_coord"], 1
 )
 
@@ -20,15 +20,15 @@ aggregators = {
     "SWTSGSfacies-dep": "mean",
 }
 
-ooip = petrelpy.gslib.get_facies_stats(df, zone_name, facies_name, aggregators)
+ooip = petrelpy.gslib.get_facies_stats(ooip_cells, zone_name, facies_name, aggregators)
 ooip.to_csv("OOIP_summary.csv")
-print("saved OOIP summary")
+print("saved OOIP summary")  # noqa: T201
 
-ooip_splits, conversion, prop_max = gslib.get_facies_histograms(
-    df, zone_name, facies_name, properties, ooip_name
+ooip_splits, conversion, prop_max = petrelpy.gslib.get_facies_histograms(
+    ooip_cells, zone_name, facies_name, properties, ooip_name
 )
 
-print("Calculated OOIP splits")
+print("Calculated OOIP splits")  # noqa: T201
 ooip_splits.to_csv("OOIP_hist.csv")
 conversion.to_csv("OOIP_hist_converter.csv")
 prop_max.to_csv("property_maxes.csv")

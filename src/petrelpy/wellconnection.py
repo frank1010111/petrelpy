@@ -187,7 +187,7 @@ def get_well(file_obj: Iterator[str]):
     """Get section of well connection file for well.
 
     Args:
-        file_obj Iterator[str]: loaded well connection file, iterated over row-by-row
+        file_obj (Iterator[str]): loaded well connection file, iterated over row-by-row
 
     Yields:
         Iterator[str]: string containing well properties
