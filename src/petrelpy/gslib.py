@@ -1,4 +1,5 @@
 """Work with gslib geomodel format."""
+
 from __future__ import annotations
 
 import logging
