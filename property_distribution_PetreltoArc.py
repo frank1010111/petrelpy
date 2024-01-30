@@ -1,4 +1,5 @@
 """Estimate average geomodel properties for Arc."""
+
 from __future__ import annotations
 
 import pandas as pd
