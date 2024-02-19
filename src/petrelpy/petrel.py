@@ -14,6 +14,7 @@ def write_header(df, fname, fill_na=-999):
         df (DataFrame): header information for wells (does not pass index)
         fname (str): file to write to
         fill_na (int, optional): value to write null values to, by default -999
+
     """
     header_head = (
         """# Petrel well head
@@ -45,6 +46,7 @@ def collect_perfs(df_perf: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: Perforations grouped by well
+
     """
     # gather dates
     df_perf["Date"] = df_perf["Date Completion"]
@@ -82,6 +84,7 @@ def export_perfs_ev(
         perfs (pd.DataFrame): contains perfs in columns for API,start_depth,stop_depth
         output (Path): prn file to write to
         header (str): first line for file, probably explaining units
+
     """
     wells = perfs.groupby(level=0)  # group by well
     with Path(output).open("w") as f:
@@ -102,6 +105,7 @@ def export_perfs_prn(perfs: pd.DataFrame, output: Path) -> None:
     Args:
         perfs (pd.DataFrame): contains perfs in columns for API,start_depth,stop_depth
         output (Path): prn file to write to
+
     """
     prn_frame = (
         perfs.reset_index()
@@ -169,6 +173,7 @@ def export_vol(wells: pd.DataFrame, outfile: str | Path, header: str | None = No
             Expected columns are API,Date,Liquid,Water,Gas.
         outfile (str | Path): vol file to save to
         header (str | None, optional): Units and column names. Defaults to None.
+
     """
     if any(wells.columns.to_series().str.startswith("Annual")):
         yearly = True
@@ -204,6 +209,7 @@ def export_injection_vol(wells, outfile, header=None):
             Expected columns are API,Date,Water,Gas.
         outfile (str | Path): vol file to save to
         header (str | None, optional): Units and column names. Defaults to None.
+
     """
     if not header:
         header = """
@@ -284,6 +290,7 @@ def read_petrel_tops(fname: str) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: Tops, with Well indicating the well, then a column for each surface
+
     """
     with Path(fname).open() as f:
         i = 0
@@ -331,6 +338,7 @@ def write_tops(df, fname, comments="", fill_na=-999):
         comments (str, optional):  Any comments to include at the beginning of the file,
             by default ""
         fill_na (int, optional): Value to assign nulls to, by default -999
+
     """
     header = "BEGIN HEADER\n" + "\n".join(df.columns) + "\nEND HEADER\n"
     body = df.fillna(fill_na).to_csv(
@@ -349,6 +357,7 @@ def get_raw_table(fname: str | Path, sheetname: int | str = 0) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: table
+
     """
     fname = Path(fname)
     if ".xls" in fname.suffix:
