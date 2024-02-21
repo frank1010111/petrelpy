@@ -21,6 +21,7 @@ def load_from_petrel(fin: Path | str, npartitions=60) -> dd.DataFrame:
 
     Returns:
         dd.DataFrame: lazy-evaluated dataframe with geomodel properties
+
     """
     numprops = pd.read_csv(fin, sep=" ", skiprows=1, nrows=1, header=None)[0][0]
     head = pd.read_csv(fin, sep=" ", skiprows=2, nrows=numprops, header=None)
@@ -43,6 +44,7 @@ def get_midpoint_cell_columns(geomodel: dd.DataFrame, dir_out: str):
 
     Returns:
         pd.DataFrame: vertical column of cells around the well's midpoint
+
     """
     # ID midpoints
     df_midpoints = geomodel.dropna(subset=["UWI-index"]).compute()
@@ -91,6 +93,7 @@ def _limit_column_height(
 
     Returns:
         pd.DataFrame: geomodel filtered to cells near well midpoints
+
     """
     df_out = []
 
@@ -148,6 +151,7 @@ def match_well_to_cell(
 
     Returns:
         pd.DataFrame: geomodel cells nearest to each well midpoint
+
     """
     # make tree in 3D for getting nearest neighbors
     tree_cells = cKDTree(geomodel[["x_coord", "y_coord", "z_coord"]])
@@ -189,6 +193,7 @@ def match_ijz_petrel(
     Returns:
         pd.DataFrame: merged dataframe that has all your favorite attributes in an ij column with
         less than zdmax vertical separation from midpoint at UWI-index.
+
     """
     df_midpoints = geomodel.dropna(subset=["UWI-index"]).compute()
     df_ijmatched = get_midpoint_cell_columns(geomodel, wdir)
@@ -223,6 +228,7 @@ def aggregate_well_properties(
 
     Returns:
         pd.DataFrame: average properties for each well index
+
     """
     if well_midponts is None:
         well_midponts = geomodel_ijmatched.dropna(subset=uwi_col)
@@ -267,6 +273,7 @@ def get_facies_histograms(
     Returns:
         tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: ooip_splits, index_conversion, and
             max property values
+
     """
     if properties is None:
         properties = ["Phi", "Sw"]
