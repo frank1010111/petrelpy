@@ -1,4 +1,5 @@
 """Command line tool for working with Petrel input and output formats."""
+
 from __future__ import annotations
 
 import sys
