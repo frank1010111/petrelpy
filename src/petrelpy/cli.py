@@ -1,4 +1,5 @@
 """Command line tool for working with Petrel input and output formats."""
+
 from __future__ import annotations
 
 import sys
@@ -68,7 +69,7 @@ def production(input: click.Path, output: click.Path, yearly: bool, zip: bool):
     if zip:
         with ZipFile(input) as f:
             spreadsheet_name = f"_{'Yearly' if yearly else 'Monthly'} Production.csv"
-            inside_zip = input.with_suffix(spreadsheet_name)
+            inside_zip = Path(input).stem + spreadsheet_name
             wells = read_production(f.open(inside_zip), yearly)
     else:
         wells = read_production(input, yearly)
