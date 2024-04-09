@@ -59,6 +59,7 @@ def process_well_connection_file(
 
     Note: vertical wells get everything included, wells not in wellname_to_heel are treated
         as vertical and have their wellname as their index
+
     """
     with Path(well_connection_file).open() as f:
         property_frame = pd.DataFrame(
@@ -119,6 +120,7 @@ def process_well_lateral(
 
     Returns:
         pd.Series: average properties along the well's lateral
+
     """
     wellname = get_wellname(well_string)
     trajectory = get_trajectory(well_string, col_names)
@@ -168,6 +170,7 @@ def get_trajectory(
 
     Returns:
         pd.DataFrame: properties along the trajectory
+
     """
     trajectory = well_string.split("TRAJECTORY")[1]
     if "END_" in trajectory:
@@ -191,6 +194,7 @@ def get_well(file_obj: Iterator[str]):
 
     Yields:
         Iterator[str]: string containing well properties
+
     """
     in_well = False
     strings = ""
@@ -216,6 +220,7 @@ def get_wellname(well_string: str) -> str:
 
     Returns:
         str: well's name
+
     """
     wellname = well_string.split("\n", 2)[0].replace("WELLNAME", "").strip()
     return wellname
