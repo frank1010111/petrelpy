@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 24.4.0
+    rev: 24.4.2
     hooks:
       - id: black-jupyter
 
@@ -47,7 +47,7 @@ repos:
         additional_dependencies: [black==22.3.0]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.4.1"
+    rev: "v0.4.10"
     hooks:
       - id: ruff
         args: ["--fix", "--show-fixes"]
@@ -63,7 +63,7 @@ repos:
   #         - scipy
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
 
