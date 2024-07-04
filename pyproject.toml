@@ -5,10 +5,10 @@ description = "Utilities for working with Petrel imports and exports."
 authors = [{ name = "Frank Male", email = "frank.male@psu.edu" }]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.8,<3.12"
+requires-python = ">=3.8,<3.13"
 dependencies = [
   "click",
-  "dask",
+  "dask[dataframe]",
   "fastparquet",
   "numpy",
   "openpyxl",
