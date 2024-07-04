@@ -23,21 +23,19 @@ def lint(session: nox.Session) -> None:
     session.run("pre-commit", "run", "--all-files", *session.posargs)
 
 
-@nox.session
+@nox.session(venv_backend="uv|venv")
 def tests(session: nox.Session) -> None:
     """Run the unit and regular tests."""
     session.install(".[test]")
     session.run("pytest", *session.posargs)
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True, venv_backend="uv|venv")
 def docs(session: nox.Session) -> None:
     """Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--serve", action="store_true", help="Serve after building")
-    parser.add_argument(
-        "-b", dest="builder", default="html", help="Build target (default: html)"
-    )
+    parser.add_argument("-b", dest="builder", default="html", help="Build target (default: html)")
     args, posargs = parser.parse_known_args(session.posargs)
 
     if args.builder != "html" and args.serve:
@@ -49,9 +47,7 @@ def docs(session: nox.Session) -> None:
     session.chdir("docs")
 
     if args.builder == "linkcheck":
-        session.run(
-            "sphinx-build", "-b", "linkcheck", ".", "_build/linkcheck", *posargs
-        )
+        session.run("sphinx-build", "-b", "linkcheck", ".", "_build/linkcheck", *posargs)
         return
 
     shared_args = (
