@@ -32,7 +32,7 @@ def load_from_petrel(fin: Path | str, npartitions=60) -> dd.DataFrame:
         na_values=-999,
         names=list(head[0]),
     )
-    geomodel = geomodel.repartition(npartitions=npartitions)
+    return geomodel.repartition(npartitions=npartitions)
 
 
 def get_midpoint_cell_columns(geomodel: dd.DataFrame, dir_out: str):
@@ -75,9 +75,7 @@ def get_midpoint_cell_columns(geomodel: dd.DataFrame, dir_out: str):
     return df_ij
 
 
-def _limit_column_height(
-    midpoints: pd.DataFrame, geomodel: dd.DataFrame, zdmax: float = 1000
-):
+def _limit_column_height(midpoints: pd.DataFrame, geomodel: dd.DataFrame, zdmax: float = 1000):
     """Cut down on size of model to depths near the midpoint.
 
     This limits the geomodel cell midpoint vertical space to within zdmax of distance
@@ -236,9 +234,7 @@ def aggregate_well_properties(
     df_out_columns = geomodel_ijmatched.iloc[0:1].agg(agg_arg).columns
     well_properties = pd.DataFrame(index=df_out_index, columns=df_out_columns)
 
-    for _, (i, j, z, uwi) in well_midponts[
-        ["i_index", "j_index", "z_coord", uwi_col]
-    ].iterrows():
+    for _, (i, j, z, uwi) in well_midponts[["i_index", "j_index", "z_coord", uwi_col]].iterrows():
         ijmatch = geomodel_ijmatched.xs((i, j), level=(0, 1), drop_level=False)
         zmatch = ijmatch[abs(ijmatch["z_coord"] - z) < zdmax]
         well_properties.loc[uwi] = zmatch.agg(agg_arg).iloc[0]
@@ -291,13 +287,9 @@ def get_facies_histograms(
     prop_max = geomodel[properties].max().compute()
     for z in zones:
         for face in facies:
-            df_slice = geomodel[
-                (geomodel[zone_name] == z) & (geomodel[facies_name] == face)
-            ]
+            df_slice = geomodel[(geomodel[zone_name] == z) & (geomodel[facies_name] == face)]
             for p in properties:
-                df_slice[p + "_"] = (
-                    (df_slice[p] // (prop_max[p] / 100.0)).dropna().astype(int)
-                )
+                df_slice[p + "_"] = (df_slice[p] // (prop_max[p] / 100.0)).dropna().astype(int)
                 split = df_slice.groupby(p + "_")[ooip_name].sum().compute()
                 ooip_splits.loc[:, (z, face, p)] = split
                 logging.info(f"finished zone {z}, facies {face}, property {p}")
