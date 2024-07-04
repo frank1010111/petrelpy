@@ -23,14 +23,14 @@ def lint(session: nox.Session) -> None:
     session.run("pre-commit", "run", "--all-files", *session.posargs)
 
 
-@nox.session
+@nox.session(venv_backend="uv|venv")
 def tests(session: nox.Session) -> None:
     """Run the unit and regular tests."""
     session.install(".[test]")
     session.run("pytest", *session.posargs)
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True, venv_backend="uv|venv")
 def docs(session: nox.Session) -> None:
     """Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links."""
     parser = argparse.ArgumentParser()

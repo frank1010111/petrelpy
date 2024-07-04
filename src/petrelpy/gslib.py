@@ -32,7 +32,7 @@ def load_from_petrel(fin: Path | str, npartitions=60) -> dd.DataFrame:
         na_values=-999,
         names=list(head[0]),
     )
-    geomodel = geomodel.repartition(npartitions=npartitions)
+    return geomodel.repartition(npartitions=npartitions)
 
 
 def get_midpoint_cell_columns(geomodel: dd.DataFrame, dir_out: str):
