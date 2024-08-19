@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 from click.testing import CliRunner
+
 from petrelpy.cli import cli
 from petrelpy.wellconnection import (
     COL_NAMES_TRAJECTORY,
