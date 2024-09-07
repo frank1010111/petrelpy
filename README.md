@@ -21,16 +21,10 @@ into Petrel, and exporting
 ## Installation
 
 The easiest way to use the command line interface is with
-[pipx](https://pypa.github.io/pipx/):
+[uvx](https://docs.astral.sh/uv/) or [pipx](https://pypa.github.io/pipx/):
 
 ```sh
-pipx install .
-```
-
-or
-
-```sh
-pipx install git+https://github.com/frank1010111/petrelpy.git
+uvx tool install petrelpy
 ```
 
 This will put `petrelpy` on your path, and you can invoke the CLI tool with
@@ -51,13 +45,13 @@ Commands:
 In order to use the library, install with pip:
 
 ```sh
-pip install git+https://github.com/frank1010111/petrelpy.git
+pip install petrelpy
 ```
 
 ## Getting started
 
-Check out [the docs](https://petrelpy.readthedocs.io). If it isn't live quite
-yet, you can choose to use `nox -s docs -- serve` to see them locally.
+Check out [the docs](https://petrelpy.readthedocs.io). You can also choose to
+use `nox -s docs -- serve` to see them locally.
 
 ## Contributing
 
