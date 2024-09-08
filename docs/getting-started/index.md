@@ -6,15 +6,7 @@ From the project's root directory, install the CLI tool using
 [pipx](https://pypa.github.io/pipx/)
 
 ```bash
-git clone https://github.com/frank1010111/petrelpy.git
-cd petrelpy
-pipx install .
-```
-
-or, from anywhere,
-
-```bash
-pipx install git+https://github.com/frank1010111/petrelpy.git
+pipx install petrelpy
 ```
 
 This will put `petrelpy` on your path.
@@ -100,7 +92,6 @@ Options:
                                  parquet.
   -h, --help                     Show this message and exit.
 ```
-
 
 The process is this:
 
