@@ -39,11 +39,10 @@ jobs:
           name: Packages
           path: dist
 
-      - name: Generate artifact attestations
-        uses: actions/attest-build-provenance@v1.1.2
-        with:
-          subject-path: "dist/*"
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Upload artifacts to release
+        uses: softprops/action-gh-release@v2
         with:
-          repository-url: https://pypi.org/legacy
+          files: dist/*
