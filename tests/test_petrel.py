@@ -108,9 +108,10 @@ def test_cli_gslib(output_format):
         assert result.exit_code == 0
         if output_format == "csv":
             bench = gslib_file.with_suffix(".csv")
-            with output_file.with_suffix(
-                ".csv"
-            ).open() as f_output, bench.open() as f_benchmark:
+            with (
+                output_file.with_suffix(".csv").open() as f_output,
+                bench.open() as f_benchmark,
+            ):
                 assert f_output.read() == f_benchmark.read()
         else:  # output_format == "parquet"
             benchmark = pd.read_csv(gslib_file.with_suffix(".csv")).sort_values(

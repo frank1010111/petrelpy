@@ -1,11 +1,11 @@
 [project]
 name = "petrelpy"
-version = "0.1.0"
+version = "0.2.0"
 description = "Utilities for working with Petrel imports and exports."
 authors = [{ name = "Frank Male", email = "frank.male@psu.edu" }]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.8,<3.13"
+requires-python = ">=3.9"
 dependencies = [
   "click",
   "dask[dataframe,diagnostics]",
@@ -115,7 +115,7 @@ extend-ignore = [
   "S101",   # Using assert
 ]
 line-length = 99
-target-version = "py37"
+target-version = "py39"
 unfixable = [
   "T20",  # Removes print statements
   "F841", # Removes unused variables
