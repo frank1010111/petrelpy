@@ -160,7 +160,7 @@ def read_production(infile: str | tuple[str], yearly=False):
         raw_df["Date"] = pd.to_datetime(raw_df.Month + raw_df.Year, format="%b%Y")
 
     wells = (
-        raw_df.groupby(["API", "Date"]).agg({col: sum for col in cols}).reset_index()
+        raw_df.groupby(["API", "Date"]).agg(dict.fromkeys(cols, sum)).reset_index()
     )
     return wells
 
