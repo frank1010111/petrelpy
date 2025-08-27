@@ -21,10 +21,10 @@ into Petrel, and exporting
 ## Installation
 
 The easiest way to use the command line interface is with
-[uvx](https://docs.astral.sh/uv/) or [pipx](https://pypa.github.io/pipx/):
+[uv](https://docs.astral.sh/uv/) or [pipx](https://pypa.github.io/pipx/):
 
 ```sh
-uvx tool install petrelpy
+uv tool install petrelpy
 ```
 
 This will put `petrelpy` on your path, and you can invoke the CLI tool with
