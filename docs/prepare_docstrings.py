@@ -325,45 +325,37 @@ for filename in glob.glob("../src/petrelpy/**/*.py", recursive=True):
 
 
 def test_signature_pos_or_kw():
-    mod = ast.parse(
-        """
+    mod = ast.parse("""
 def func(x, z):
     ...
-"""
-    )
+""")
     node = mod.body[0]
     assert dosig(node) == "x, z"
 
 
 def test_signature_kwarg():
-    mod = ast.parse(
-        """
+    mod = ast.parse("""
 def func(x, z=None):
     ...
-"""
-    )
+""")
     node = mod.body[0]
     assert dosig(node) == "x, z=None"
 
 
 def test_signature_vararg():
-    mod = ast.parse(
-        """
+    mod = ast.parse("""
 def func(x, *y, z=None):
     ...
-"""
-    )
+""")
     node = mod.body[0]
     assert dosig(node) == "x, *y, z=None"
 
 
 def test_signature_kwonly():
-    mod = ast.parse(
-        """
+    mod = ast.parse("""
 def func(x, *, y, z=None):
     ...
-"""
-    )
+""")
     node = mod.body[0]
     assert dosig(node) == "x, *, y, z=None"
 

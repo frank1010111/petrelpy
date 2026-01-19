@@ -16,14 +16,10 @@ def write_header(df, fname, fill_na=-999):
         fill_na (int, optional): value to write null values to, by default -999
 
     """
-    header_head = (
-        """# Petrel well head
+    header_head = """# Petrel well head
 VERSION 1
 BEGIN HEADER
-"""
-        + "\n".join(df.columns)
-        + "\nEND HEADER\n"
-    )
+""" + "\n".join(df.columns) + "\nEND HEADER\n"
     body = df.fillna(fill_na).to_csv(
         header=False, index=False, quoting=2, sep=" ", line_terminator="\n"
     )
